@@ -1,0 +1,64 @@
+name: CloudScale CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  ACR_NAME: acryousefomarmohammedfinal
+  ACR_LOGIN_SERVER: acryousefomarmohammedfinal.azurecr.io
+  IMAGE_NAME: cloud-devops-final
+  # Using the exact names from your Terraform outputs
+  RESOURCE_GROUP: rg-yousef-Omar-Mohammed-final
+  AKS_CLUSTER: acryousefomarmohammedfinal
+
+jobs:
+  build-and-push:
+    name: Build & Push to ACR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Login to ACR
+        run: az acr login --name ${{ env.ACR_NAME }}
+
+      # Fulfills Requirement: Build and test Docker image on every push
+      - name: Build Docker Image
+        run: docker build -t ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
+
+      # Fulfills Requirement: Push image to ACR
+      - name: Push to ACR
+        run: docker push ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+
+  deploy-to-aks:
+    name: Deploy to Kubernetes
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    # Fulfills Requirement: Manual approval gate (This links to your setup!)
+    environment: production 
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get AKS Credentials
+        run: az aks get-credentials --resource-group ${{ env.RESOURCE_GROUP }} --name ${{ env.AKS_CLUSTER }}
+
+      - name: Inject new Image Tag into Kubernetes Manifest
+        run: |
+          sed -i 's|image: .*|image: ${{ env.ACR_LOGIN_SERVER }}/${{ env.IMAGE_NAME }}:${{ github.sha }}|g' k8s/deployment.yaml
+
+      # Fulfills Requirement: Deploy to AKS
+      - name: Deploy to AKS
+        run: kubectl apply -f k8s/
