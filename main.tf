@@ -23,7 +23,7 @@ resource "azurerm_container_registry" "acr" {
 
 # 3. Azure Kubernetes Service (AKS) - 2 nodes, Standard_B2s
 resource "azurerm_kubernetes_cluster" "aks" {
-  name                = "aks-${var.student_name}-final"
+  name                = "acr${replace(lower(var.student_name), "-", "")}final"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   dns_prefix          = "aks-${var.student_name}"

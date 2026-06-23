@@ -1,0 +1,45 @@
+# ========================
+# Terraform
+# ========================
+# Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# Crash log files
+crash.log
+crash.*.log
+
+# Ignore any .tfvars files that are generated automatically for their terraform run, these might contain secrets
+*.tfvars
+*.tfvars.json
+
+# Ignore override files as they are usually used to override resources locally and not in a version control environment
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignore CLI configuration files
+.terraformrc
+terraform.rc
+
+# ========================
+# Python / Flask
+# ========================
+pycache/
+*.py[cod]
+*$py.class
+venv/
+env/
+.env
+
+# ========================
+# OS / IDE Files
+# ========================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
