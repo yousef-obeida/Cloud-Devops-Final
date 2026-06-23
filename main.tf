@@ -10,7 +10,7 @@ resource "azurerm_resource_group" "rg" {
 
 # 2. Azure Container Registry (ACR) - Basic SKU
 resource "azurerm_container_registry" "acr" {
-  name                = "acr${var.student_name}final" # Must be globally unique, alphanumeric only
+  name                = "acryousefomarmohammedfinal" # <-- HARDCODED: No spaces, no hyphens, all lowercase
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   sku                 = "Basic"
