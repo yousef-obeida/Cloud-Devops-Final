@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudscale-app
+  labels:
+    app: cloudscale
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: cloudscale
+  template:
+    metadata:
+      labels:
+        app: cloudscale
+    spec:
+      containers:
+      - name: flask-app
+        # This is your exact ACR image address
+        image: acryousefomarmohammedfinal.azurecr.io/cloud-devops-final:v1
+        ports:
+        - containerPort: 8080
+        # Readiness Probe
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        # Liveness Probe
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          initialDelaySeconds: 15
+          periodSeconds: 20
